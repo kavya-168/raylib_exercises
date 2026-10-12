@@ -52,8 +52,7 @@ function sum(data) {
 }
 
 function calAverage(data) {
-  const average = sum(data) / data.length;
-  return average;
+  return sum(data) / data.length;
 }
 
 function getRecObj(world, i, barsHeight) {
@@ -66,7 +65,7 @@ function getRecObj(world, i, barsHeight) {
 }
 
 function drawBar(barObj) {
-  r.DrawRectangleRec(barObj, r.BLUE);
+  r.DrawRectangleRec(barObj, r.DARKBLUE);
 }
 
 function drawAverage(y, width) {
@@ -81,12 +80,12 @@ function drawBarGraph(world) {
   }
 
   const lineOffset = calRatio(world, calAverage(world.data));
-  drawAverage(lineOffset, world.WIDTH);
+  drawAverage(world.HEIGHT - lineOffset, world.WIDTH);
 }
 
 function draw(world) {
   r.BeginDrawing();
-  r.ClearBackground(r.ray);
+  r.ClearBackground(r.RAYWHITE);
 
   drawBarGraph(world);
 
