@@ -69,8 +69,8 @@ function drawBar(barObj) {
   r.DrawRectangleRec(barObj, r.BLUE);
 }
 
-function drawAverage(average, width) {
-  r.DrawLine(0, average, width, average, r.RED);
+function drawAverage(y, width) {
+  r.DrawLine(0, y, width, y, r.RED);
 }
 
 function drawBarGraph(world) {
@@ -86,7 +86,7 @@ function drawBarGraph(world) {
 
 function draw(world) {
   r.BeginDrawing();
-  r.ClearBackground(r.RAYWHITE);
+  r.ClearBackground(r.ray);
 
   drawBarGraph(world);
 
