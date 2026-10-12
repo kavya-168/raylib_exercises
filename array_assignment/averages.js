@@ -5,16 +5,31 @@ function setup() {
   const HEIGHT = 400;
 
   const data = [12, 45, 78, 23, 91, 56, 34, 67, 89, 40];
+  const max = findMax(data);
+
+  const highestBar = HEIGHT * 0.9;
+  const barWidth = 20;
+  const gap = 2;
 
   r.SetTraceLogLevel(r.LOG_ERROR);
   r.InitWindow(WIDTH, HEIGHT, "averages");
   r.SetTargetFPS(50);
 
-  return { WIDTH, HEIGHT, data };
+  return { WIDTH, HEIGHT, data, max, highestBar, barWidth, gap };
 }
 
-function createBar() {
-  return { width: 20, gap: 2 };
+function calBarsHeight(world) {
+  const barsHeight = [];
+
+  for (let i = 0; i < world.data.length; i++) {
+    barsHeight[i] = calRatio(world, world.data[i]);
+  }
+
+  return barsHeight;
+}
+
+function calRatio(world, num) {
+  return (world.highestBar / world.max) * num;
 }
 
 function findMax(data) {
@@ -23,54 +38,57 @@ function findMax(data) {
   for (const n of data) {
     max = Math.max(max, n);
   }
+
   return max;
 }
 
-function calHeight(world, i, max) {
-  return (((world.data[i] * 90) / max) * world.HEIGHT) / 100;
-}
-
-function calRecDimensions(world, bar, i) {
-  const max = findMax(world.data);
-
-  const height = calHeight(world, i, max);
-  const width = bar.width;
-
-  const x = (bar.width + bar.gap) * i;
-  const y = world.HEIGHT - height;
-
-  return { x, y, width, height };
-}
-
-function calAverage(world) {
+function sum(data) {
   let total = 0;
 
-  for (const n of world.data) {
+  for (const n of data) {
     total += n;
   }
-  const average = total / world.data.length;
-  return (((average * 90) / 91) * world.HEIGHT) / 100;
+  return total;
 }
 
-function drawBars(world) {
-  const bar = createBar();
+function calAverage(data) {
+  const average = sum(data) / data.length;
+  return average;
+}
+
+function getRecObj(world, i, barsHeight) {
+  return {
+    x: (world.barWidth + world.gap) * i,
+    y: world.HEIGHT - barsHeight[i],
+    width: world.barWidth,
+    height: barsHeight[i],
+  };
+}
+
+function drawBar(barObj) {
+  r.DrawRectangleRec(barObj, r.BLUE);
+}
+
+function drawAverage(average, width) {
+  r.DrawLine(0, average, width, average, r.RED);
+}
+
+function drawBarGraph(world) {
+  const barsHeight = calBarsHeight(world);
 
   for (let i = 0; i < world.data.length; i++) {
-    const recDimensions = calRecDimensions(world, bar, i);
-
-    r.DrawRectangleRec(recDimensions, r.DARKBLUE);
+    drawBar(getRecObj(world, i, barsHeight));
   }
 
-  const ave = calAverage(world);
-
-  r.DrawLine(0, ave, world.WIDTH, ave, r.RED);
+  const lineOffset = calRatio(world, calAverage(world.data));
+  drawAverage(lineOffset, world.WIDTH);
 }
 
 function draw(world) {
   r.BeginDrawing();
-  r.ClearBackground(r.WHITE);
+  r.ClearBackground(r.RAYWHITE);
 
-  drawBars(world);
+  drawBarGraph(world);
 
   r.EndDrawing();
 }
@@ -89,5 +107,3 @@ function main() {
 }
 
 main();
-
-Math.max;
